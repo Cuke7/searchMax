@@ -10,9 +10,15 @@
   },
   "dependencies": {
     "@nuxtjs/pwa": "^3.3.5",
+    "child_process": "^1.0.2",
     "core-js": "^3.15.1",
     "fast-fuzzy": "^1.10.10",
+    "fs": "^0.0.1-security",
+    "google-spreadsheet": "^3.1.15",
+    "net": "^1.0.2",
     "nuxt": "^2.15.7",
+    "nuxt-google-sheets-parser": "^1.2.4",
+    "tls": "^0.0.1",
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
