@@ -7,9 +7,20 @@
         autocomplete="off"
         hide-details
       ></v-text-field>
-      <div class="mt-12">
-        <v-row v-for="(result, index) in results" :key="index" class="my-3">
-          {{ result.prenom }}
+      <v-chip-group
+        filter
+        active-class="primary--text"
+        class="my-3"
+        column
+        v-model="selectedType"
+      >
+        <v-chip v-for="(type, index) in types" :key="index">
+          {{ type }}
+        </v-chip>
+      </v-chip-group>
+      <div class="mt-6">
+        <v-row v-for="(result, index) in results" :key="index" class="mx-3">
+          <v-col> {{ result.nom }} - {{ result.type }} </v-col>
         </v-row>
       </div>
     </v-col>
@@ -20,15 +31,32 @@
 // Library pour le search
 const { search } = require("fast-fuzzy");
 
-// data_magical_items contient un tableau JS avec toutes nos données
-import data_magical_items from "~/static/magical_objects.json";
-
 export default {
   data() {
     return {
       searchQuery: "",
       dataSearch: [],
-      searcher: null
+      types: [
+        "Grass",
+        "Bug",
+        "Fire",
+        "Water",
+        "Electric",
+        "Ground",
+        "Poison",
+        "Fairy",
+        "Fighting",
+        "Psychic",
+        "Rock",
+        "Ghost",
+        "Ice",
+        "Dragon",
+        "Normal",
+        "Dark",
+        "Steel",
+        "Flying"
+      ],
+      selectedType: 3
     };
   },
   methods: {
@@ -37,35 +65,31 @@ export default {
     }
   },
   computed: {
-    // Un objet pour rechercher, on le configure avec des options
-    // searcher() {
-    // },
-    // Un tableau avec les résultats de la recherche
     results() {
       // Si on ne tape rien, renvoyer tous les résultats
       if (this.searchQuery == "") {
-        return this.dataSearch;
+        return this.dataSearch.filter(
+          pokemon => pokemon.type == this.types[this.selectedType]
+        );
       } else {
         // Sinon on renvoie les résultats de la recherche
-        let arr = search(this.searchQuery, this.dataSearch, {
-          keySelector: obj => obj.prenom
-        });
-
-        // console.log(arr);
+        let arr = search(
+          this.searchQuery,
+          this.dataSearch.filter(
+            pokemon => pokemon.type == this.types[this.selectedType]
+          ),
+          {
+            threshold: 0.6,
+            keySelector: obj => obj.nom
+          }
+        );
         return arr;
       }
     }
   },
   async mounted() {
-    // see: https://docs.google.com/spreadsheets/d/10WDbAPAY7Xl5DT36VuMheTPTTpqx9x0C5sDCnh4BGps
     const sheetId = "1v_Mc_FRtV7_yrBcEH6_2S1EVyqtLI5DhLAbudJ419f4";
-
     const data1 = await this.parseSheet(sheetId);
-    console.log(data1); // [{"a":1,"b":2,"c":3},{"a":4,"b":5,"c":6},{"a":7,"b":8,"c":9}]
-
-    // const data2 = await this.parseSheet(sheetId, "Sheet2");
-    // console.log(data2); // [{"a":10,"b":20,"c":30},{"a":40,"b":50,"c":60},{"a":70,"b":80,"c":90}]
-
     this.dataSearch = data1;
   }
 };
